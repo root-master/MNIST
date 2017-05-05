@@ -103,7 +103,7 @@ for train_index, val_index in skf.split(x_train,y_train):
               epochs=2,
               verbose=1,
               validation_data=(x_val_fold, y_val_fold))
-    score = model.evaluate(x_val, y_val, verbose=0)
+    score = model.evaluate(x_val_fold, y_val_fold, verbose=0)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
 
