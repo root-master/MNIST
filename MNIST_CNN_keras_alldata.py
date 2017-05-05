@@ -15,6 +15,7 @@ from keras import backend as K
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
 
 
 
@@ -48,36 +49,32 @@ x_train = x_train.reshape(x_train.shape[0], 28, 28)
 print(x_train.shape)
 print(y_train.shape)
 
-x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.10, random_state=42)
-
 
 if K.image_data_format() == 'channels_first':
     x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
-    x_val = x_val.reshape(x_val.shape[0], 1, img_rows, img_cols)
     x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
     input_shape = (1, img_rows, img_cols)
 else:
     x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-    x_val = x_val.reshape(x_val.shape[0], img_rows, img_cols, 1)
     x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
     input_shape = (img_rows, img_cols, 1)
 
 x_train = x_train.astype('float32')
-x_val = x_val.astype('float32')
 x_test = x_test.astype('float32')
 
 x_train /= 255
 x_test /= 255
-x_val /= 255
 
 print('x_train shape:', x_train.shape)
 print(x_train.shape[0], 'train samples')
-print(x_val.shape[0], 'validation samples')
 print(x_test.shape[0], 'test samples')
 
 # convert class vectors to binary class matrices
-y_train = keras.utils.to_categorical(y_train, num_classes)
-y_val = keras.utils.to_categorical(y_val, num_classes)
+# y_train = keras.utils.to_categorical(y_train, num_classes)
+
+skf = StratifiedKFold(n_splits=10)
+skf.get_n_splits(x_train,y_train)
+
 
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
@@ -95,32 +92,27 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
+for train_index, val_index in skf.split(x_train,y_train):
+    x_train_fold = x_train[train_index]
+    x_val_fold = x_train[val_index]
+    y_train_fold = keras.utils.to_categorical(y_train[train_index], num_classes)
+    y_val_fold = keras.utils.to_categorical(y_train[val_index], num_classes)
+    
+    model.fit(x_train_fold, y_train_fold,
+              batch_size=batch_size,
+              epochs=2,
+              verbose=1,
+              validation_data=(x_val_fold, y_val_fold))
+    score = model.evaluate(x_val, y_val, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
 
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(x_val, y_val))
-score = model.evaluate(x_val, y_val, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
-
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1)
-
-model.fit(x_val, y_val,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1)
 
 predictions = model.predict_classes(x_test, verbose=0)
 
 submissions=pd.DataFrame({"ImageId": list(range(1,len(predictions)+1)),
                          "Label": predictions})
 submissions.to_csv("./Kaggle_Submissions/test_predictions.csv", index=False, header=True)
-
 
 
 
