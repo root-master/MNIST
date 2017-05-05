@@ -105,12 +105,21 @@ score = model.evaluate(x_val, y_val, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
+model.fit(x_train, y_train,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1)
+
+model.fit(x_val, y_val,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1)
 
 predictions = model.predict_classes(x_test, verbose=0)
 
 submissions=pd.DataFrame({"ImageId": list(range(1,len(predictions)+1)),
                          "Label": predictions})
-submissions.to_csv("DR.csv", index=False, header=True)
+submissions.to_csv("./Kaggle_Submissions/test_predictions.csv", index=False, header=True)
 
 
 
