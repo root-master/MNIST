@@ -77,22 +77,25 @@ skf.get_n_splits(x_train,y_train)
 
 
 model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
-                 activation='relu',
+model.add(Conv2D(20, kernel_size=(4, 4),
+                 activation='relu', padding='same',
                  input_shape=input_shape))
-model.add(Conv2D(64, (3, 3), activation='relu'))
+# model.add(keras.layers.convolutional.ZeroPadding2D(padding=(1, 1), data_format=None))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Conv2D(40, kernel_size=(5, 5),
+                 activation='relu'))
+model.add(MaxPooling2D(pool_size=(3, 3)))
+#model.add(Dropout(0.25))
 model.add(Flatten())
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.5))
+model.add(Dense(150, activation='relu'))
+#model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-"""
+
 for train_index, val_index in skf.split(x_train,y_train):
     x_train_fold = x_train[train_index]
     x_val_fold = x_train[val_index]
@@ -113,8 +116,7 @@ predictions = model.predict_classes(x_test, verbose=0)
 
 submissions=pd.DataFrame({"ImageId": list(range(1,len(predictions)+1)),
                          "Label": predictions})
-submissions.to_csv("./Kaggle_Submissions/test_predictions.csv", index=False, header=True)
-"""
+submissions.to_csv("./Kaggle_Submissions/keras_dan.csv", index=False, header=True)
 
 
 
