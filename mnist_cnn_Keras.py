@@ -87,7 +87,9 @@ model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 model.add(Flatten())
-model.add(Dense(128, activation='relu'))
+model.add(Dense(150, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(75, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
 
@@ -110,8 +112,7 @@ predictions = model.predict_classes(x_test, verbose=0)
 
 submissions=pd.DataFrame({"ImageId": list(range(1,len(predictions)+1)),
                          "Label": predictions})
-submissions.to_csv("DR.csv", index=False, header=True)
-
+submissions.to_csv("two hidden layer.csv", index=False, header=True)
 
 
 
