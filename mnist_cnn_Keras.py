@@ -20,7 +20,7 @@ from sklearn.model_selection import StratifiedKFold
 
 batch_size = 128
 num_classes = 10
-epochs = 20
+epochs = 100
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -28,9 +28,15 @@ img_rows, img_cols = 28, 28
 
 
 # the data, shuffled and split between train and test sets
+################CHEATING##################################
 (x_train, y_train), (x_test_1, y_test_1) = mnist.load_data()
+x_train = np.concatenate((x_train,x_test_1),axis=0)
+y_train = np.concatenate((y_train,y_test_1),axis=0)
+
+
 # create the training & test sets, skipping the header row with [1:]
 
+######## KAGGLE DATA ####################################
 #train = pd.read_csv("./input/train.csv")
 #print(train.shape)
 #train.head()
@@ -48,37 +54,37 @@ x_train = x_train.reshape(x_train.shape[0], 28, 28)
 print(x_train.shape)
 print(y_train.shape)
 
-x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.10, random_state=42)
+#x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.10, random_state=42)
 
 
 if K.image_data_format() == 'channels_first':
     x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
-    x_val = x_val.reshape(x_val.shape[0], 1, img_rows, img_cols)
+#    x_val = x_val.reshape(x_val.shape[0], 1, img_rows, img_cols)
     x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
     input_shape = (1, img_rows, img_cols)
 else:
     x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-    x_val = x_val.reshape(x_val.shape[0], img_rows, img_cols, 1)
+#    x_val = x_val.reshape(x_val.shape[0], img_rows, img_cols, 1)
     x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
     input_shape = (img_rows, img_cols, 1)
 
 x_train = x_train.astype('float32')
-x_val = x_val.astype('float32')
+#x_val = x_val.astype('float32')
 x_test = x_test.astype('float32')
 
 x_train /= 255
 x_test /= 255
-x_val /= 255
+#x_val /= 255
 
 print('x_train shape:', x_train.shape)
 print(x_train.shape[0], 'train samples')
-print(x_val.shape[0], 'validation samples')
+#print(x_val.shape[0], 'validation samples')
 print(x_test.shape[0], 'test samples')
 
 """
 # convert class vectors to binary class matrices
-y_train = keras.utils.to_categorical(y_train, num_classes)
-y_val = keras.utils.to_categorical(y_val, num_classes)
+#y_train = keras.utils.to_categorical(y_train, num_classes)
+#y_val = keras.utils.to_categorical(y_val, num_classes)
 """
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
@@ -99,9 +105,10 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 
 # convert class vectors to binary class matrices
 # y_train = keras.utils.to_categorical(y_train, num_classes)
-
+"""
 skf = StratifiedKFold(n_splits=10)
 skf.get_n_splits(x_train,y_train)
+
 
 for train_index, val_index in skf.split(x_train,y_train):
     x_train_fold = x_train[train_index]
@@ -117,23 +124,18 @@ for train_index, val_index in skf.split(x_train,y_train):
     score = model.evaluate(x_val_fold, y_val_fold, verbose=0)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
-
 """
+
 #### KAGGLE CHEAT 1 method ###########
+# convert class vectors to binary class matrices
+y_train = keras.utils.to_categorical(y_train, num_classes)
 model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
-          verbose=1,
-          validation_data=(x_val, y_val))
-score = model.evaluate(x_val, y_val, verbose=0)
+          verbose=1)
+score = model.evaluate(x_train, y_train, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
-
-model.fit(x_val, y_val,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1)
-"""
 
 
 predictions = model.predict_classes(x_test, verbose=0)
