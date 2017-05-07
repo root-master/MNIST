@@ -165,4 +165,3 @@ with open(filename, "w") as json_file:
 # serialize weights to HDF5
 model.save_weights("../models/model%s_weights.h5" % datetime.now().strftime('%Y-%m-%d_%H%M'))
 print("Saved model to disk.")
-"""
