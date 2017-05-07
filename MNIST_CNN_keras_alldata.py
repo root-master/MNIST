@@ -92,7 +92,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-"""
+
 for train_index, val_index in skf.split(x_train,y_train):
     x_train_fold = x_train[train_index]
     x_val_fold = x_train[val_index]
@@ -114,7 +114,7 @@ predictions = model.predict_classes(x_test, verbose=0)
 submissions=pd.DataFrame({"ImageId": list(range(1,len(predictions)+1)),
                          "Label": predictions})
 submissions.to_csv("./Kaggle_Submissions/test_predictions.csv", index=False, header=True)
-"""
+
 
 
 

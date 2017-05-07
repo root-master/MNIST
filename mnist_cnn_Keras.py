@@ -20,7 +20,7 @@ from sklearn.model_selection import train_test_split
 
 batch_size = 128
 num_classes = 10
-epochs = 12
+epochs = 20
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -96,6 +96,29 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               metrics=['accuracy'])
 
 
+# convert class vectors to binary class matrices
+# y_train = keras.utils.to_categorical(y_train, num_classes)
+
+skf = StratifiedKFold(n_splits=10)
+skf.get_n_splits(x_train,y_train)
+
+for train_index, val_index in skf.split(x_train,y_train):
+    x_train_fold = x_train[train_index]
+    x_val_fold = x_train[val_index]
+    y_train_fold = keras.utils.to_categorical(y_train[train_index], num_classes)
+    y_val_fold = keras.utils.to_categorical(y_train[val_index], num_classes)
+    
+    model.fit(x_train_fold, y_train_fold,
+              batch_size=batch_size,
+              epochs=2,
+              verbose=1,
+              validation_data=(x_val_fold, y_val_fold))
+    score = model.evaluate(x_val_fold, y_val_fold, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
+
+"""
+#### KAGGLE CHEAT 1 method ###########
 model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
@@ -109,14 +132,14 @@ model.fit(x_val, y_val,
           batch_size=batch_size,
           epochs=epochs,
           verbose=1)
-
+"""
 
 
 predictions = model.predict_classes(x_test, verbose=0)
 
 submissions=pd.DataFrame({"ImageId": list(range(1,len(predictions)+1)),
                          "Label": predictions})
-submissions.to_csv("two hidden layer.csv", index=False, header=True)
+submissions.to_csv("./Kaggle_Submissions/kaggle_cheat_2", index=False, header=True)
 
 
 
