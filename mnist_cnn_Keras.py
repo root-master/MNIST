@@ -15,7 +15,7 @@ from keras import backend as K
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 from sklearn.model_selection import train_test_split
-
+from sklearn.model_selection import StratifiedKFold
 
 
 batch_size = 128
