@@ -75,10 +75,11 @@ print(x_train.shape[0], 'train samples')
 print(x_val.shape[0], 'validation samples')
 print(x_test.shape[0], 'test samples')
 
+"""
 # convert class vectors to binary class matrices
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_val = keras.utils.to_categorical(y_val, num_classes)
-
+"""
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
                  activation='relu',
