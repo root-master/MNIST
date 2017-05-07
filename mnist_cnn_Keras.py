@@ -105,6 +105,12 @@ score = model.evaluate(x_val, y_val, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
+model.fit(x_val, y_val,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1)
+
+
 
 predictions = model.predict_classes(x_test, verbose=0)
 
