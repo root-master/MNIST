@@ -121,7 +121,7 @@ def batch_generator(trainX, trainY, batch_size):
             batchY = [trainY[idx] for idx in idxs[i * batch_size : (i+1) * batch_size]]
             batchX = [add_noise(rotation_and_shear(img[0])) for img in batchX]
             batchX = np.array(batchX)
-            batchX = batchX.reshape(batchX.shape[0], 1, batchX.shape[1], batchX.shape[2])
+            batchX = batchX.reshape(batchX.shape[0], batchX.shape[1], batchX.shape[2],1)
             yield batchX, np.array(batchY)
 
 
@@ -132,7 +132,7 @@ history = model.fit_generator(batch_generator(trainX, trainY, batch_size=batch_s
     samples_per_epoch=np.floor(trainY.shape[0] / batch_size) * batch_size, nb_epoch=nb_epoch, verbose=1, callbacks=[reduce_lr])
 
 # preprocess the test data to feed it into the network
-testX = test.reshape(test.shape[0], 1, img_height, img_width)
+testX = test.reshape(test.shape[0], img_height, img_width, 1)
 testX = testX.astype(float)
 testX /= 255.0
 

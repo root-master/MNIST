@@ -26,21 +26,21 @@ epochs = 12
 img_rows, img_cols = 28, 28
 
 
-"""
+
 # the data, shuffled and split between train and test sets
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-"""
+(x_train, y_train), (x_test_1, y_test_1) = mnist.load_data()
 # create the training & test sets, skipping the header row with [1:]
-train = pd.read_csv("./input/train.csv")
-print(train.shape)
-train.head()
+
+#train = pd.read_csv("./input/train.csv")
+#print(train.shape)
+#train.head()
 
 test= pd.read_csv("./input/test.csv")
 print(test.shape)
 test.head()
 
-x_train = (train.ix[:,1:].values).astype('float32') # all pixel values
-y_train = train.ix[:,0].values.astype('int32') # only labels i.e targets digits
+#x_train = (train.ix[:,1:].values).astype('float32') # all pixel values
+#y_train = train.ix[:,0].values.astype('int32') # only labels i.e targets digits
 x_test = test.values.astype('float32')
 
 #Convert train datset to (num_images, img_rows, img_cols) format 
@@ -88,8 +88,6 @@ model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 model.add(Flatten())
 model.add(Dense(150, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(75, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
 
